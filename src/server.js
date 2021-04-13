@@ -1,7 +1,7 @@
 import express from "express";
 import listEndpoints from "express-list-endpoints";
 import cors from "cors";
-import studentsRoutes from "/Users/Usuario/Documents/GitHub/M5D2/src/students/index.js";
+import studentsRoutes from "./students/index.js";
 
 const server = express();
 const port = 3001;
