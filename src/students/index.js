@@ -16,7 +16,9 @@ const studentsJSONdataPath = join(dirname(currentFileName), "students.json"); //
 
 const students = JSON.parse(fs.readFileSync(studentsJSONdataPath).toString()); // simplified version
 
-router.get("/", (req, res) => {});
+router.get("/", (req, res) => {
+  res.send(students);
+});
 //Get student by ===> id
 router.get("/:id", (req, res) => {
   const student = students.find((student) => student.id === req.params.id);
@@ -41,7 +43,7 @@ router.put("/:id", (req, res) => {
   students.push(studentModified);
 
   fs.writeFileSync(studentsJSONdataPath, JSON.stringify(newStudentsArray));
-  res.status(204).send({ mssg: "Succesfully edited" });
+  res.status(204).send();
 });
 
 router.delete("/:id", (req, res) => {
@@ -49,7 +51,7 @@ router.delete("/:id", (req, res) => {
     (student) => student.id !== req.params.id
   );
   fs.writeFileSync(studentsJSONdataPath, JSON.stringify(newStudentsArray));
-  res.status(204).send({ mssg: "Succesfully deleted" });
+  res.status(204).send();
 });
 
 export default router;
