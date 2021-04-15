@@ -1,0 +1,61 @@
+[
+  {
+    "name": "Juan",
+    "surname": "Pancracio",
+    "age": "110",
+    "email": "junitocracio@juancito.com",
+    "birth": "12-12-1911",
+    "id": "4s28t2qgzykngjxocs"
+  },
+  {
+    "name": "Pepito",
+    "surname": "Ebaristo",
+    "age": "110",
+    "email": "pepitoebar@pepitoe.com",
+    "birth": "12-12-1950",
+    "id": "4s28t2qh1lknhgy0f8"
+  },
+  {
+    "name": "Paquito",
+    "surname": "Gonzales",
+    "age": "120",
+    "email": "paquitog@paquitog.com",
+    "birth": "12-12-1960",
+    "id": "4s28t2qom5kni30l5k"
+  },
+  {
+    "name": "Rosita",
+    "surname": "Perez",
+    "age": "120",
+    "email": "rosita@rositap.com",
+    "birth": "12-12-1960",
+    "id": "4s28t2qpkdkni3iyqh"
+  },
+  {
+    "name": "Teresita",
+    "surname": "Ramirez",
+    "age": "120",
+    "email": "Teresita@tr.com",
+    "birth": "12-12-1960",
+    "id": "4s28t2qpq6kni3o2wy",
+    "createdAt": "2021-04-14T23:43:49.185Z"
+  },
+  {
+    "name": "Marcela Edited",
+    "surname": "Camargo",
+    "age": "120",
+    "email": "Marce@mc.com",
+    "birth": "12-12-1960",
+    "id": "4s28t2qqidkni4yqoq",
+    "lastModified": "2021-04-15T00:25:33.231Z"
+  },
+  {
+    "name": "Maria editada",
+    "surname": "Gonzales",
+    "age": "120",
+    "email": "Mari@mg.com",
+    "birth": "12-12-1960",
+    "id": "4s28t2qrmqkni5w8bw",
+    "lastModified": "2021-04-15T00:46:45.758Z"
+  }
+]

@@ -16,6 +16,19 @@ const studentsJSONdataPath = join(dirname(currentFileName), "students.json"); //
 
 const students = JSON.parse(fs.readFileSync(studentsJSONdataPath).toString()); // simplified version
 
+const writeChanges = (arr, item) => {
+  try {
+    if (item) {
+      arr.push(item);
+      fs.writeFileSync(studentsJSONdataPath, JSON.stringify(arr));
+    } else{
+      fs.writeFileSync(studentsJSONdataPath, JSON.stringify(arr));
+    }
+  } catch (error) {
+    console.log("Probably you have an error with fs write method",error);
+  }
+};
+
 router.get("/", (req, res) => {
   res.send(students);
 });
@@ -26,10 +39,8 @@ router.get("/:id", (req, res) => {
 });
 
 router.post("/", (req, res) => {
-  const newStudent = req.body;
-  newStudent.id = uniqid(); //adding unique id for student
-  students.push(newStudent);
-  fs.writeFileSync(studentsJSONdataPath, JSON.stringify(students));
+  const newStudent = { ...req.body, id: uniqid(), createdAt: new Date() }; //New Student && adding unique id for student && ceratedDate
+  writeChanges(students, newStudent);
   res.status(201).send(newStudent);
 });
 
@@ -38,11 +49,13 @@ router.put("/:id", (req, res) => {
     (student) => student.id !== req.params.id
   ); // filtering out the specific student object
 
-  const studentModified = req.body;
-  studentModified.id = req.params.id; //saving student id
-  students.push(studentModified);
+  const studentModified = {
+    ...req.body,
+    id: req.params.id,
+    lastModified: new Date(),
+  }; // saving Student.id && adding field lastModified
 
-  fs.writeFileSync(studentsJSONdataPath, JSON.stringify(newStudentsArray));
+  writeChanges(newStudentsArray, studentModified);
   res.status(204).send();
 });
 
@@ -50,7 +63,8 @@ router.delete("/:id", (req, res) => {
   const newStudentsArray = students.filter(
     (student) => student.id !== req.params.id
   );
-  fs.writeFileSync(studentsJSONdataPath, JSON.stringify(newStudentsArray));
+  writeChanges(newStudentsArray);
+  // fs.writeFileSync(studentsJSONdataPath, JSON.stringify(newStudentsArray));
   res.status(204).send();
 });
 
