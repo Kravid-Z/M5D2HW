@@ -7,7 +7,7 @@
 // ERROR 404 means NOT FOUND!
 export const notFoundErrorHandler = (err, req, res, next) => {
   if (err.statusCode === 404) {
-    res.status(404).send(err.message || "Sorry nothing here ºº! !");
+    res.status(404).send(err.frontEndMssg || "Sorry nothing here ºº! !");
   } else {
     next(err); // Remember always pass down the error to other handlers
   }

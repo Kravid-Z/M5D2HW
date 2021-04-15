@@ -43,7 +43,8 @@ router.get("/:id", async (req, res, next) => {
     if (student) {
       res.send(student);
     } else {
-      const err = new Error("User not found check id, please");
+      const err = new Error();
+      err.frontEndMssg = "User not found check id, please";
       err.statusCode = 404;
       next(err);
     }
@@ -87,7 +88,7 @@ router.put("/:id", async (req, res, next) => {
     }; // saving Student.id && adding field lastModified
     newStudentsArray.push(studentModified);
     await writeStudents(newStudentsArray);
-    res.status(204).send();
+    send(studentModified); // if i send like this res.status(204).send(studentModified); status code always will omit the thing passed to send(string || object)
   } catch (error) {
     console.log("error in PUT student, pasing it to errorHandling" + error);
     next(error);
@@ -95,13 +96,21 @@ router.put("/:id", async (req, res, next) => {
 });
 //DELETE student
 router.delete("/:id", async (req, res, next) => {
+  // need another condition to avoid FRONTEND send id that doesn't exist.
   try {
     const students = await getStudents();
     const newStudentsArray = students.filter(
       (student) => student.id !== req.params.id
     );
-    await writeStudents(newStudentsArray);
-    res.status(204).send();
+    if (students.length === newStudentsArray.length) {
+      const err = new Error();
+      err.frontEndMssg = "This id doesn't exist";
+      err.statusCode = 404;
+      next(err);
+    } else {
+      await writeStudents(newStudentsArray);
+      res.status(204).send({ mssg: "User Deleted" });
+    }
   } catch (error) {
     console.log("error in DELETE student, pasing it to errorHandling" + error);
     next(error);
