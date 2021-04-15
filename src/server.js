@@ -1,4 +1,10 @@
 import express from "express";
+import {
+  notFoundErrorHandler,
+  badRequestErrorHandler,
+  forbiddenErrorHandler,
+  catchAllErrorsHandler,
+} from "./errorHandling.js";
 // import listEndpoints from "express-list-endpoints";
 import cors from "cors";
 import studentsRoutes from "./students/index.js";
@@ -13,8 +19,13 @@ server.use(express.json());
 server.use("/students", studentsRoutes);
 // server.use("/projects", projectsRoutes);
 
-// console.log(listEndpoints(server)); // this is for check it in real time with nodemon package in the console to get all routeslist
+// HERE MUST BE THE ERROR MIDDLEWARE (ALWAYS AFTER ALL ROUTES) *ORDER ALWAYS MATTER*
+server.use(notFoundErrorHandler); // 1. First check not founds!
+server.use(badRequestErrorHandler); // 2. Second check BadRequests!
+server.use(forbiddenErrorHandler); // 3. Third check Forbiddens! ??????????????
+server.use(catchAllErrorsHandler); // 4. Fourth check FATAL ERRORS!!!!
 
+// console.log(listEndpoints(server)); // this is for check it in real time with nodemon package in the console to get all routeslist
 server.listen(port, () => {
   console.log("Server is running on port ", port);
 });
