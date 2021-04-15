@@ -1,71 +1,110 @@
 import express from "express";
-import fs from "fs";
-import { fileURLToPath } from "url";
-import { dirname, join } from "path";
+import { check, validationResult } from "express-validator";
 import uniqid from "uniqid";
+import { getStudents, writeStudents } from "../tools/fs-tools.js";
 
 const router = express.Router();
 
-const currentFileName = fileURLToPath(import.meta.url); // getting current file path
-const studentsJSONdataPath = join(dirname(currentFileName), "students.json"); // creating file path for students.json file with data persitance taking in account difenrent OS with diferent fs roots
+//Temporaly input validator *************
 
-//Explanation of fs (file system core module when work in machinestorage without database in cloud)
-// const fileAsABuffer = fs.readFileSync(studentsJSONPath) // returns a buffer (machine readable, not human readable)
-// const fileAsAString = fileAsABuffer.toString() // returns a string from a buffer
-// const fileAsAJSON = JSON.parse(fileAsAString) // converts string into JSON
-
-const students = JSON.parse(fs.readFileSync(studentsJSONdataPath).toString()); // simplified version
-
-const writeChanges = (arr, item) => {
+const middlewareValidator = [
+  check("name").exists().withMessage("Name is mandatory field!"),
+  check("surname").exists().withMessage("Name is mandatory field!"),
+  check("age").isInt().withMessage("Age must be an integer!"),
+  check("email").isEmail().withMessage("Invalid email, please check again"),
+];
+//GET all students or filetred students by query ?
+router.get("/", async (req, res, next) => {
   try {
-    if (item) {
-      arr.push(item);
-      fs.writeFileSync(studentsJSONdataPath, JSON.stringify(arr));
-    } else{
-      fs.writeFileSync(studentsJSONdataPath, JSON.stringify(arr));
+    const students = await getStudents();
+
+    if (req.query && req.query.name) {
+      const filteredStudents = students.filter(
+        (s) => s.hasOwnProperty("name") && s.name === req.query.name
+      );
+      res.send(filteredStudents);
+    } else {
+      res.send(students);
     }
   } catch (error) {
-    console.log("Probably you have an error with fs write method",error);
+    console.log(
+      "error in GET all students or filtered by query, pasing it to errorHandling", error
+    );
+    next(error);
   }
-};
-
-router.get("/", (req, res) => {
-  res.send(students);
-});
-//Get student by ===> id
-router.get("/:id", (req, res) => {
-  const student = students.find((student) => student.id === req.params.id);
-  res.send(student);
 });
 
-router.post("/", (req, res) => {
-  const newStudent = { ...req.body, id: uniqid(), createdAt: new Date() }; //New Student && adding unique id for student && ceratedDate
-  writeChanges(students, newStudent);
-  res.status(201).send(newStudent);
+//GET student by ===> id
+router.get("/:id", async (req, res, next) => {
+  try {
+    const students = await getStudents();
+    const student = students.find((student) => student.id === req.params.id);
+    if (student) {
+      res.send(student);
+    } else {
+      const err = new Error("User not found check id, please");
+      err.statusCode = 404;
+      next(err);
+    }
+  } catch (error) {
+    console.log("error in GET by id, pasing it to errorHandling" + error);
+    next(error);
+  }
 });
-
-router.put("/:id", (req, res) => {
-  const newStudentsArray = students.filter(
-    (student) => student.id !== req.params.id
-  ); // filtering out the specific student object
-
-  const studentModified = {
-    ...req.body,
-    id: req.params.id,
-    lastModified: new Date(),
-  }; // saving Student.id && adding field lastModified
-
-  writeChanges(newStudentsArray, studentModified);
-  res.status(204).send();
+//POST new student
+router.post("/", middlewareValidator, async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const err = new Error();
+      err.errorList = errors;
+      err.statusCode = 400;
+      next("error in POST, pasing it to errorHandling", err); // passing error to errorHandling
+    } else {
+      const students = await getStudents();
+      const newStudent = { ...req.body, id: uniqid(), createdAt: new Date() }; //New Student && adding unique id for student && ceratedDate
+      students.push(newStudent);
+      await writeStudents(students);
+      res.status(201).send({ id: newStudent.id });
+    }
+  } catch (err) {
+    err.statusCode = 500;
+    next(err);
+  }
 });
-
-router.delete("/:id", (req, res) => {
-  const newStudentsArray = students.filter(
-    (student) => student.id !== req.params.id
-  );
-  writeChanges(newStudentsArray);
-  // fs.writeFileSync(studentsJSONdataPath, JSON.stringify(newStudentsArray));
-  res.status(204).send();
+//PUT edit student
+router.put("/:id", async (req, res, next) => {
+  try {
+    const students = await getStudents();
+    const newStudentsArray = students.filter(
+      (student) => student.id !== req.params.id
+    ); // filtering out the specific student object
+    const studentModified = {
+      ...req.body,
+      id: req.params.id,
+      lastModified: new Date(),
+    }; // saving Student.id && adding field lastModified
+    newStudentsArray.push(studentModified);
+    await writeStudents(newStudentsArray);
+    res.status(204).send();
+  } catch (error) {
+    console.log("error in PUT student, pasing it to errorHandling" + error);
+    next(error);
+  }
+});
+//DELETE student
+router.delete("/:id", async (req, res, next) => {
+  try {
+    const students = await getStudents();
+    const newStudentsArray = students.filter(
+      (student) => student.id !== req.params.id
+    );
+    await writeStudents(newStudentsArray);
+    res.status(204).send();
+  } catch (error) {
+    console.log("error in DELETE student, pasing it to errorHandling" + error);
+    next(error);
+  }
 });
 
 export default router;
