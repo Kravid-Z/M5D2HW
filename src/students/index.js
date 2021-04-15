@@ -28,7 +28,8 @@ router.get("/", async (req, res, next) => {
     }
   } catch (error) {
     console.log(
-      "error in GET all students or filtered by query, pasing it to errorHandling", error
+      "error in GET all students or filtered by query, pasing it to errorHandling",
+      error
     );
     next(error);
   }
@@ -67,9 +68,9 @@ router.post("/", middlewareValidator, async (req, res, next) => {
       await writeStudents(students);
       res.status(201).send({ id: newStudent.id });
     }
-  } catch (err) {
-    err.statusCode = 500;
-    next(err);
+  } catch (error) {
+    error.statusCode = 500;
+    next(error);
   }
 });
 //PUT edit student
