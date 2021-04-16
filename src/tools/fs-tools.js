@@ -12,6 +12,9 @@ const { readJSON, writeJSON, writeFile, createReadStream } = fs;
 const dataFolderPath = join(dirname(fileURLToPath(import.meta.url)), "../data");
 // const studentsFolderPath = thisFolderPath("../../public/img/students");
 
+
+export const getCurrentFolderPath = currentFile => dirname(fileURLToPath(currentFile))
+
 export const getStudents = async () =>
   await readJSON(join(dataFolderPath, "students.json"));
 export const getProjects = async () =>

@@ -8,16 +8,26 @@ import {
 // import listEndpoints from "express-list-endpoints";
 import cors from "cors";
 import studentsRoutes from "./students/index.js";
-// import projectsRoutes from "./projects/index.js";
+import projectsRoutes from "./projects/index.js";
+import { join } from "path";
+import { getCurrentFolderPath } from "./tools/fs-tools.js";
 
 const server = express();
+
 const port = process.env.PORT || 3001;
+
+const publicFolderPath = join(
+  getCurrentFolderPath(import.meta.url),
+  "../public"
+);
+
+server.use(express.static(publicFolderPath));
 
 server.use(cors()); // This is to avoid errors wotking in frontend and backend in same enviroment
 server.use(express.json());
 
 server.use("/students", studentsRoutes);
-// server.use("/projects", projectsRoutes);
+server.use("/projects", projectsRoutes);
 
 // HERE MUST BE THE ERROR MIDDLEWARE (ALWAYS AFTER ALL ROUTES) *ORDER ALWAYS MATTER*
 server.use(notFoundErrorHandler); // 1. First check not founds!

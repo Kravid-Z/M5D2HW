@@ -13,6 +13,14 @@ const router = express.Router();
  * - RepoURL -> Code Repo URL (es.: GitHub / BitBucket project URL) *Req
  * - LiveURL -> URL of the "live" project *Req
  * - StudentID *Req
+OBJECT TO POST
+{
+     "name": "",
+     "description": "",
+     "studentID":"",
+     "repoURL": "",
+     "liveURL": "",
+ }
  * */
 
 //Temporaly input validator *************
