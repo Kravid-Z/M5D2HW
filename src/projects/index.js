@@ -116,20 +116,17 @@ router.post(
     }
   }
 );
-//POST projects/id/downloadPhoto
-router.post(
-    "/:id/downloadPhoto",
-    async (req, res, next) => {
-        try {
-            res.setHeader("Content-Disposition", `attachment;`) // header needed to tell the browser to open the "save file as " window
-        
-            const source = readProjectsPictures(req.params.id) // creates a readable stream on that file on disk
-            const destination = res // response object is a writable stream used as the destination
-        
-            pipeline(source, destination, err => console.log(err)) // with pipeline we connect together a source and a destination
-          } catch (error) {}
-    }
-  );
+//GET projects/id/downloadPhoto
+router.get("/:id/downloadPhoto", async (req, res, next) => {
+  try {
+    res.setHeader("Content-Disposition", `attachment;`); // header needed to tell the browser to open the "save file as " window
+
+    const source = readProjectsPictures(req.params.id); // creates a readable stream on that file on disk
+    const destination = res; // response object is a writable stream used as the destination
+
+    pipeline(source, destination, (err) => console.log(err)); // with pipeline we connect together a source and a destination
+  } catch (error) {}
+});
 //PUT edit project
 router.put("/:id", async (req, res, next) => {
   try {
