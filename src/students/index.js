@@ -88,7 +88,7 @@ router.put("/:id", async (req, res, next) => {
     }; // saving Student.id && adding field lastModified
     newStudentsArray.push(studentModified);
     await writeStudents(newStudentsArray);
-    send(studentModified); // if i send like this res.status(204).send(studentModified); status code always will omit the thing passed to send(string || object)
+    res.send(studentModified); // if i send like this res.status(204).send(studentModified); status code always will omit the thing passed to send(string || object)
   } catch (error) {
     console.log("error in PUT student, pasing it to errorHandling" + error);
     next(error);

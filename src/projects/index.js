@@ -1,7 +1,14 @@
 import express from "express";
 import { check, validationResult } from "express-validator";
 import uniqid from "uniqid";
-import { getProjects, writeProjects } from "../tools/fs-tools.js";
+import {
+  getProjects,
+  writeProjects,
+  writeProjectsPictures,
+  readProjectsPictures,
+} from "../tools/fs-tools.js";
+import { pipeline } from "stream";
+import multer from "multer";
 
 const router = express.Router();
 
@@ -32,6 +39,7 @@ const middlewareValidator = [
   check("repoURL").isURL().withMessage("Invalid URL, please check again"),
   check("liveURL").isURL().withMessage("Invalid URL, please check again"),
 ];
+
 //GET all projects or filetred projects by query ?
 router.get("/", async (req, res, next) => {
   try {
@@ -93,6 +101,35 @@ router.post("/", middlewareValidator, async (req, res, next) => {
     next(error);
   }
 });
+//POST projects/id/upLoadPhoto
+router.post(
+  "/:projectID/upLoadPhoto",
+  multer().single("projectPhoto"),
+  async (req, res, next) => {
+    try {
+      console.log(req.file);
+      await writeProjectsPictures(req.file.originalname, req.file.buffer);
+      res.send("ok");
+    } catch (error) {
+      error.statusCode = 500;
+      next(error);
+    }
+  }
+);
+//POST projects/id/downloadPhoto
+router.post(
+    "/:id/downloadPhoto",
+    async (req, res, next) => {
+        try {
+            res.setHeader("Content-Disposition", `attachment;`) // header needed to tell the browser to open the "save file as " window
+        
+            const source = readProjectsPictures(req.params.id) // creates a readable stream on that file on disk
+            const destination = res // response object is a writable stream used as the destination
+        
+            pipeline(source, destination, err => console.log(err)) // with pipeline we connect together a source and a destination
+          } catch (error) {}
+    }
+  );
 //PUT edit project
 router.put("/:id", async (req, res, next) => {
   try {
@@ -107,7 +144,7 @@ router.put("/:id", async (req, res, next) => {
     }; // saving Projects.id && adding field lastModified
     newProjectsArray.push(projectModified);
     await writeProjects(newProjectsArray);
-    send(projectModified); // if i send like this res.status(204).send(studentModified); status code always will omit the thing passed to send(string || object)
+    res.send(projectModified); // if i send like this res.status(204).send(studentModified); status code always will omit the thing passed to send(string || object)
   } catch (error) {
     console.log("error in PUT project, pasing it to errorHandling" + error);
     next(error);

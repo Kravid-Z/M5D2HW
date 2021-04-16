@@ -34,6 +34,7 @@ server.use(notFoundErrorHandler); // 1. First check not founds!
 server.use(badRequestErrorHandler); // 2. Second check BadRequests!
 server.use(forbiddenErrorHandler); // 3. Third check Forbiddens! ??????????????
 server.use(catchAllErrorsHandler); // 4. Fourth check FATAL ERRORS!!!!
+// HERE SHOULD BE ROUTE NOT FOUND! server.use(routeNotFound); 
 
 // console.log(listEndpoints(server)); // this is for check it in real time with nodemon package in the console to get all routeslist
 server.listen(port, () => {

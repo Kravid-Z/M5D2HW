@@ -23,7 +23,7 @@ export const badRequestErrorHandler = (err, req, res, next) => {
 // ERROR 403 means FORBIDDEN!
 export const forbiddenErrorHandler = (err, req, res, next) => {
   if (err.statusCode === 403) {
-    res.status(403).send("Forbidden!"); // This error should be throw when ueer is not authorized still not setted
+    res.status(403).send({mssg:"Forbidden!"}); // This error should be throw when ueer is not authorized still not setted
   } else {
     next(err);
   }
@@ -32,5 +32,5 @@ export const forbiddenErrorHandler = (err, req, res, next) => {
 // ERROR 500 means SERIOUS PROBLEMS!
 
 export const catchAllErrorsHandler = (err, req, res, next) => {
-  res.status(500).send("Generic Server Error!");
+  res.status(500).send({mssg:"Generic Server Error!"});
 };
